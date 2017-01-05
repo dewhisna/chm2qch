@@ -51,7 +51,8 @@ void writeFile(const QString &filename, const QByteArray &data)
 
 void writeQhp(const QString &filename, ChmFile *chm, const QString &nameSpace, bool writeRoot = true)
 {
-    msg("Writing Qt Help project", QFileInfo(filename).fileName());
+    QFileInfo fi(filename);
+    msg("Writing Qt Help project", fi.fileName());
 
     QFile f(filename);
     f.open(QFile::WriteOnly);
@@ -69,11 +70,11 @@ void writeQhp(const QString &filename, ChmFile *chm, const QString &nameSpace, b
 
     xml.writeStartElement("customFilter");
     xml.writeAttribute("name", chm->title());
-    xml.writeTextElement("filterAttribute", namespaceFromTitle(chm->title(), false));
+    xml.writeTextElement("filterAttribute", namespaceFromTitle(fi.baseName(), false));
     xml.writeEndElement();
 
     xml.writeStartElement("filterSection");
-    xml.writeTextElement("filterAttribute", namespaceFromTitle(chm->title(), false));
+    xml.writeTextElement("filterAttribute", namespaceFromTitle(fi.baseName(), false));
 
     xml.writeStartElement("toc");
     chm->writeToc(xml, writeRoot);
@@ -146,8 +147,10 @@ int main(int argc, char *argv[])
 
     quiet = parser.isSet("q");
     QString filename = parser.positionalArguments().value(0);
-
     QString destDir = parser.value("d");
+
+    if(destDir.isEmpty())
+        destDir = QDir::currentPath();
 
     if(filename.isEmpty())
     {
@@ -172,7 +175,7 @@ int main(int argc, char *argv[])
     bool writeRoot = !parser.isSet("r");
 
     if(nameSpace.isEmpty())
-        nameSpace = namespaceFromTitle(chm.title());
+        nameSpace = namespaceFromTitle(QFileInfo(filename).completeBaseName());
 
     writeQhp(QDir::cleanPath(destDir + "/" + qhpname), &chm, nameSpace, writeRoot);
 
