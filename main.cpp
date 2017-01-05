@@ -36,7 +36,12 @@ QString namespaceFromTitle(QString title, bool full = true)
 
 void writeFile(const QString &filename, const QByteArray &data)
 {
-    msg("Extracting", QFileInfo(filename).fileName());
+    QFileInfo fi(filename);
+    msg("Extracting", fi.fileName());
+
+    QDir dd(fi.path());
+    if(!dd.exists())
+        dd.mkpath(fi.path());
 
     QFile f(filename);
     f.open(QFile::WriteOnly);
@@ -151,7 +156,13 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    ChmFile chm(filename);
+    ChmFile chm;
+
+    if(!chm.open(filename))
+    {
+        std::cout << "Cannot open " << filename.toStdString();
+        return 1;
+    }
 
     foreach(const QString &name, chm.objectList())
         writeFile(QDir::cleanPath(destDir + "/" + fileSystemName(name)), chm.objectData(name));
