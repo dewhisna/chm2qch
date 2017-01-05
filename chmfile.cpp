@@ -2,19 +2,16 @@
 #include "hhparser.h"
 
 #include <chm_lib.h>
-#include <QTextStream>
 #include <QBuffer>
 #include <QDebug>
 
 ChmFile::ChmFile()
 {
-    defaultIndent = 3;
     handle = NULL;
 }
 
 ChmFile::ChmFile(const QString &filename)
 {
-    defaultIndent = 3;
     open(filename);
 }
 
@@ -75,66 +72,56 @@ QString ChmFile::homeUrl()
     return defaultTopic;
 }
 
-QString ChmFile::tableOfContents(bool writeRoot)
+void ChmFile::writeToc(QXmlStreamWriter &xml, bool writeRoot)
 {
-    qDebug() << "Generating TOC";
-
-    QString str;
-    QTextStream stream(&str);
-
     QList<ParsedEntry> toc;
     HhParser p(this);
     p.parse(tocFileName(), toc, false);
 
     if(writeRoot)
     {
-        defaultIndent = 4;
-        stream << QString("<section title=\"%1\" ref=\"%2\">\n").arg(title()).arg(homeUrl());
+        xml.writeStartElement("section");
+        xml.writeAttribute("title", title());
+        xml.writeAttribute("ref", homeUrl());
     }
 
     for(int i = 0; i < toc.count(); i++)
     {
         bool hasChild = toc.value(i+1).indent > toc[i].indent;
 
-        stream << indent(toc[i].indent);
+        xml.writeStartElement("section");
+        xml.writeAttribute("title", toc[i].name);
+        xml.writeAttribute("ref", toc[i].urls.value(0).toString());
 
         if(!hasChild)
-            stream << QString("<section title=\"%1\" ref=\"%2\"/>\n").arg(toc[i].name, toc[i].urls.value(0).toString());
-        else
-            stream << QString("<section title=\"%1\" ref=\"%2\">\n").arg(toc[i].name, toc[i].urls.value(0).toString());
+            xml.writeEndElement();//section
 
         int d = toc[i].indent - toc.value(i+1).indent;
 
         if(d)
         {
             for(int j = 0; j < d; j++)
-                stream << indent(toc[i].indent - j - 1) << "</section>\n";
+                xml.writeEndElement();//section
         }
     }
 
     if(writeRoot)
-        stream << QString("</section>\n");
-
-    return str;
+        xml.writeEndElement();//section (root)
 }
 
-QString ChmFile::index()
+void ChmFile::writeIndex(QXmlStreamWriter &xml)
 {
-    qDebug() << "Generating Index";
-
-    QString str;
-    QTextStream stream(&str);
-
     QList<ParsedEntry> toc;
     HhParser p(this);
     p.parse(tocFileName(), toc, false);
 
     for(int i = 0; i < toc.count(); i++)
     {
-        stream << indent(0) << QString("<keyword name=\"%1\" ref=\"%2\"/>\n").arg(toc[i].name, toc[i].urls.value(0).toString());
+        xml.writeStartElement("keyword");
+        xml.writeAttribute("name", toc[i].name);
+        xml.writeAttribute("ref", toc[i].urls.value(0).toString());
+        xml.writeEndElement();
     }
-
-    return str;
 }
 
 QString ChmFile::tocFileName() const
@@ -153,14 +140,6 @@ QString ChmFile::idxFileName() const
             return str;
 
     return QString();
-}
-
-QString ChmFile::indent(int n)
-{
-    QString s;
-    for(int i = 0; i < n + defaultIndent; i++)
-        s.append("    ");
-    return s;
 }
 
 void ChmFile::readSystemData()

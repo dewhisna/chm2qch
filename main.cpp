@@ -3,7 +3,6 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QFile>
-#include <QTextStream>
 #include <QProcess>
 #include <QFileInfo>
 #include <iostream>
@@ -33,39 +32,51 @@ void writeFile(const QString &filename, const QByteArray &data)
     f.write(data);
 }
 
-void writeQhp(const QString &filename, ChmFile *chm, const QString &ns, bool writeRoot = true)
+void writeQhp(const QString &filename, ChmFile *chm, const QString &nameSpace, bool writeRoot = true)
 {
     std::cout << "Writing Qt Help project " << filename.toStdString() << std::endl;
 
     QFile f(filename);
     f.open(QFile::WriteOnly);
 
-    QTextStream stream(&f);
+    QXmlStreamWriter xml(&f);
 
-    stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-              "<QtHelpProject version=\"1.0\">\n"
-              "    <namespace>" << ns << "</namespace>\n"
-              "    <virtualFolder>doc</virtualFolder>\n"
-              "    <customFilter name=\"" << chm->title() << "\">\n"
-              "        <filterAttribute>" << namespaceFromTitle(chm->title(), false) << "</filterAttribute>\n"
-              "    </customFilter>\n"
-              "    <filterSection>\n"
-              "        <filterAttribute>" << namespaceFromTitle(chm->title(), false) << "</filterAttribute>\n";
+    xml.setAutoFormatting(true);
+    xml.writeStartDocument();
 
-    stream << "        <toc>\n";               
-    stream << chm->tableOfContents(writeRoot);
-    stream << "        </toc>\n";
+    xml.writeStartElement("QtHelpProject");
+    xml.writeAttribute("version", "1.0");
 
-    stream << "        <keywords>\n";
-    stream << chm->index();
-    stream << "        </keywords>\n";
+    xml.writeTextElement("namespace", nameSpace);
+    xml.writeTextElement("virtualFolder", "doc"); //???
 
-    stream << "        <files>\n";
+    xml.writeStartElement("customFilter");
+    xml.writeAttribute("name", chm->title());
+    xml.writeTextElement("filterAttribute", namespaceFromTitle(chm->title(), false));
+    xml.writeEndElement();
+
+    xml.writeStartElement("filterSection");
+    xml.writeTextElement("filterAttribute", namespaceFromTitle(chm->title(), false));
+
+    xml.writeStartElement("toc");
+    chm->writeToc(xml, writeRoot);
+    xml.writeEndElement();//toc
+
+    xml.writeStartElement("keywords");
+    chm->writeIndex(xml);
+    xml.writeEndElement();//keywords
+
+    xml.writeStartElement("files");
+
     foreach(const QString &name, chm->objectList())
-        stream << "            <file>" << fileSystemName(name) << "</file>\n";
-    stream << "        </files>\n";
+        xml.writeTextElement("file", fileSystemName(name));
 
-    stream << "    </filterSection>\n</QtHelpProject>";
+    xml.writeEndElement();//files
+
+    xml.writeEndElement();//filterSection
+
+    xml.writeEndElement();//QtHelpProject
+    xml.writeEndDocument();
 }
 
 void runQhg(const QString &qhpname)

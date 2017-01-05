@@ -4,6 +4,7 @@
 #include <QString>
 #include <QStringList>
 #include <QByteArray>
+#include <QXmlStreamWriter>
 
 struct chmFile;
 struct chmUnitInfo;
@@ -23,20 +24,19 @@ public:
 
     QString title();
     QString homeUrl();
-    QString tableOfContents(bool writeRoot = true);
-    QString index();
+
+    void writeToc(QXmlStreamWriter &xml, bool writeRoot = true);
+    void writeIndex(QXmlStreamWriter &xml);
 
 private:
     QString tocFileName() const;
     QString idxFileName() const;
-    QString indent(int n);
     void    readSystemData();
 
     chmFile *handle;
     QStringList objNames;
     QString titleStr;
     QString defaultTopic;
-    int defaultIndent;
 
     friend int enumChmContents(chmFile *h, chmUnitInfo *ui, void *context);
 };
