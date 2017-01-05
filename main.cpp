@@ -7,6 +7,14 @@
 #include <QFileInfo>
 #include <iostream>
 
+bool quiet = false;
+
+void msg(const QString &s0, const QString &s1 = QString())
+{
+    if(!quiet)
+        std::cout << s0.toStdString() << " " << s1.toStdString() << std::endl;
+}
+
 QString fileSystemName(const QString &objname)
 {
     QString str = objname;
@@ -25,7 +33,7 @@ QString namespaceFromTitle(QString title, bool full = true)
 
 void writeFile(const QString &filename, const QByteArray &data)
 {
-    std::cout << "Extracting " << filename.toStdString() << std::endl;
+    msg("Extracting", filename);
 
     QFile f(filename);
     f.open(QFile::WriteOnly);
@@ -34,7 +42,7 @@ void writeFile(const QString &filename, const QByteArray &data)
 
 void writeQhp(const QString &filename, ChmFile *chm, const QString &nameSpace, bool writeRoot = true)
 {
-    std::cout << "Writing Qt Help project " << filename.toStdString() << std::endl;
+    msg("Writing Qt Help project", filename);
 
     QFile f(filename);
     f.open(QFile::WriteOnly);
@@ -81,9 +89,13 @@ void writeQhp(const QString &filename, ChmFile *chm, const QString &nameSpace, b
 
 void runQhg(const QString &qhpname)
 {
-    std::cout << "Running qhelpgenerator...\n";
+    msg("Running qhelpgenerator:");
 
     QProcess qhg;
+
+    if(!quiet)
+        qhg.setProcessChannelMode(QProcess::ForwardedChannels);
+
     qhg.start("qhelpgenerator", {qhpname});
     qhg.waitForFinished(-1);
 }
@@ -96,23 +108,26 @@ int main(int argc, char *argv[])
     app.setApplicationVersion("1.0");
 
     QCommandLineParser parser;
+    parser.setApplicationDescription("Converts CHM files to QCH format.");
     parser.addHelpOption();
     parser.addPositionalArgument("input", "Input CHM file");
     parser.addOptions({
         {{"g", "generate" }, "Run qhelpgenerator to produce QCH file"},
+        {{"r", "no-root"  }, "Do not write root contents section"},
+        {{"q", "quiet"    }, "Quiet mode. Do not write any messages to stdout" },
+        {{"n", "namespace"}, "Set documentation namespace to <name>", "name"}
         //{{"c", "clean"    }, "Delete immediate files after running qhelpgenerator"},
-        {{"r", "no-root"  }, "Do not write root section"},
         //{{"o", "outfile"  }, "Set output file name to <out>", "out"},
         //{{"d", "directory"}, "Set target directory to <dir>", "dir"},
-        {{"n", "namespace"}, "Set documentation namespace to <name>", "name"}
     });
     parser.process(app);
 
+    quiet = parser.isSet("q");
     QString filename = parser.positionalArguments().value(0);
 
     if(filename.isEmpty())
     {
-        std::cout << "Input file not specified." << std::endl;
+        std::cout << "No input file specified." << std::endl;
         parser.showHelp();
         return 0;
     }

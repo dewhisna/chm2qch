@@ -16,7 +16,6 @@ public:
 
     QString		name;
     QList<QUrl>	urls;
-    int			iconid;
     int			indent;
     QString		seealso;
 };

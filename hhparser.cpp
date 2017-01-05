@@ -11,18 +11,20 @@ HhParser::~HhParser()
 {
 }
 
+/*
+ * Based on EBook_CHM::parseFileAndFillArray from Kchmviewer source.
+ * (Copyright (C) 2004-2014 George Yunaev, gyunaev@ulduzsoft.com)
+ */
 bool HhParser::parse(const QString& file, QList< ParsedEntry >& data, bool asIndex ) const
 {
     const int MAX_NEST_DEPTH = 256;
 
     QString src(chm->objectData(file));
 
-    //EBookTocEntry::Icon defaultimagenum = EBookTocEntry::IMAGE_AUTO;
     int pos = 0, indent = 0, root_indent_offset = 0;
     bool in_object = false, root_indent_offset_set = false;
 
     ParsedEntry entry;
-    //entry.iconid = defaultimagenum;
 
     // Split the HHC file by HTML tags
     int stringlen = src.length();
@@ -58,8 +60,6 @@ bool HhParser::parse(const QString& file, QList< ParsedEntry >& data, bool asInd
             tagword = src.mid (pos, word_end - pos).toLower();
         else
             tagword = tag.toLower();
-
-        //DEBUGPARSER(("tag: '%s', tagword: '%s'\n", qPrintable( tag ), qPrintable( tagword ) ));
 
         // <OBJECT type="text/sitemap"> - a topic entry
         if ( tagword == "object" && tag.indexOf ("text/sitemap", 0, Qt::CaseInsensitive ) != -1 )
@@ -97,7 +97,6 @@ bool HhParser::parse(const QString& file, QList< ParsedEntry >& data, bool asInd
 
             entry.name = QString::null;
             entry.urls.clear();
-            //entry.iconid = defaultimagenum;
             entry.seealso.clear();
             in_object = false;
         }
@@ -120,8 +119,6 @@ bool HhParser::parse(const QString& file, QList< ParsedEntry >& data, bool asInd
 
             // offset+6 skips 'value='
             findStringInQuotes (tag, offset + value_pattern.length(), pvalue, false, true);
-
-            //DEBUGPARSER(("<param>: name '%s', value '%s'", qPrintable( pname ), qPrintable( pvalue )));
 
             if ( pname == "name" || pname == "keyword" )
             {
@@ -165,29 +162,17 @@ bool HhParser::parse(const QString& file, QList< ParsedEntry >& data, bool asInd
                 entry.urls.push_back( QUrl("seealso") );
                 entry.seealso = pvalue;
             }
-            else if ( pname == "imagenumber" )
-            {
-                //bool bok;
-                //int imgnum = pvalue.toInt (&bok);
-
-                //if ( bok && imgnum >= 0 && imgnum < EBookTocEntry::MAX_BUILTIN_ICONS )
-                    //entry.iconid = (EBookTocEntry::Icon) imgnum;
-            }
         }
         else if ( tagword == "ul" ) // increase indent level
         {
             // Fix for buggy help files
             if ( ++indent >= MAX_NEST_DEPTH )
                 qFatal("EBook_CHMImpl::ParseAndFillTopicsTree: max nest depth (%d) is reached, error in help file", MAX_NEST_DEPTH);
-
-            //DEBUGPARSER(("<ul>: new intent is %d\n", indent - root_indent_offset));
         }
         else if ( tagword == "/ul" ) // decrease indent level
         {
             if ( --indent < root_indent_offset )
                 indent = root_indent_offset;
-
-            //DEBUGPARSER(("</ul>: new intent is %d\n", indent - root_indent_offset));
         }
 
         pos = i;
