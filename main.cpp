@@ -3,11 +3,14 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QFile>
+#include <QDir>
 #include <QProcess>
 #include <QFileInfo>
+#include <QStringList>
 #include <iostream>
 
 bool quiet = false;
+QStringList generatedFiles;
 
 void msg(const QString &s0, const QString &s1 = QString())
 {
@@ -33,16 +36,17 @@ QString namespaceFromTitle(QString title, bool full = true)
 
 void writeFile(const QString &filename, const QByteArray &data)
 {
-    msg("Extracting", filename);
+    msg("Extracting", QFileInfo(filename).fileName());
 
     QFile f(filename);
     f.open(QFile::WriteOnly);
     f.write(data);
+    generatedFiles.append(filename);
 }
 
 void writeQhp(const QString &filename, ChmFile *chm, const QString &nameSpace, bool writeRoot = true)
 {
-    msg("Writing Qt Help project", filename);
+    msg("Writing Qt Help project", QFileInfo(filename).fileName());
 
     QFile f(filename);
     f.open(QFile::WriteOnly);
@@ -85,6 +89,8 @@ void writeQhp(const QString &filename, ChmFile *chm, const QString &nameSpace, b
 
     xml.writeEndElement();//QtHelpProject
     xml.writeEndDocument();
+
+    generatedFiles.append(filename);
 }
 
 void runQhg(const QString &qhpname)
@@ -98,6 +104,16 @@ void runQhg(const QString &qhpname)
 
     qhg.start("qhelpgenerator", {qhpname});
     qhg.waitForFinished(-1);
+}
+
+void cleanFiles()
+{
+    msg("Cleaning files...");
+    foreach(const QString &name, generatedFiles)
+    {
+        QFile f(name);
+        f.remove();
+    }
 }
 
 int main(int argc, char *argv[])
@@ -115,15 +131,18 @@ int main(int argc, char *argv[])
         {{"g", "generate" }, "Run qhelpgenerator to produce QCH file"},
         {{"r", "no-root"  }, "Do not write root contents section"},
         {{"q", "quiet"    }, "Quiet mode. Do not write any messages to stdout" },
-        {{"n", "namespace"}, "Set documentation namespace to <name>", "name"}
-        //{{"c", "clean"    }, "Delete immediate files after running qhelpgenerator"},
+        {{"n", "namespace"}, "Set documentation namespace to <name>", "name"},
+        {{"c", "clean"    }, "Delete immediate files after running qhelpgenerator"},
+        {{"d", "directory"}, "Set target directory to <dir>", "dir"}
+        //{{"t", "temp"     }, "Use Temporary directory as dest dir" }
         //{{"o", "outfile"  }, "Set output file name to <out>", "out"},
-        //{{"d", "directory"}, "Set target directory to <dir>", "dir"},
     });
     parser.process(app);
 
     quiet = parser.isSet("q");
     QString filename = parser.positionalArguments().value(0);
+
+    QString destDir = parser.value("d");
 
     if(filename.isEmpty())
     {
@@ -135,7 +154,7 @@ int main(int argc, char *argv[])
     ChmFile chm(filename);
 
     foreach(const QString &name, chm.objectList())
-        writeFile(fileSystemName(name), chm.objectData(name));
+        writeFile(QDir::cleanPath(destDir + "/" + fileSystemName(name)), chm.objectData(name));
 
     QString qhpname = QFileInfo(filename).completeBaseName() + ".qhp";
     QString nameSpace = parser.value("n");
@@ -144,10 +163,13 @@ int main(int argc, char *argv[])
     if(nameSpace.isEmpty())
         nameSpace = namespaceFromTitle(chm.title());
 
-    writeQhp(qhpname, &chm, nameSpace, writeRoot);
+    writeQhp(QDir::cleanPath(destDir + "/" + qhpname), &chm, nameSpace, writeRoot);
 
     if(parser.isSet("g"))
-        runQhg(qhpname);
+        runQhg(QDir::cleanPath(destDir + "/" + qhpname));
+
+    if(parser.isSet("c"))
+        cleanFiles();
 
     std::cout << "chm2qch finished.";
     return app.exec();
