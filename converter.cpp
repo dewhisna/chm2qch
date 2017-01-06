@@ -1,3 +1,21 @@
+/*
+ *  chm2qch - Tool for converting Windows CHM files to Qt Help format.
+ *  Copyright (C) 2016 Mitrich Software, bitbucket.org/mitrich_k/chm2qch
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "converter.h"
 #include "chmfile.h"
 
@@ -28,7 +46,7 @@ bool Converter::run()
 
     if(!chm.open(fileName))
     {
-        std::cout << "Cannot open " << fileName.toStdString();
+        std::cout << "ERROR: Cannot open " << fileName.toStdString();
         return false;
     }
 
@@ -78,7 +96,13 @@ void Converter::writeFile(const QString &filename, const QByteArray &data)
         dd.mkpath(fi.path());
 
     QFile f(filename);
-    f.open(QFile::WriteOnly);
+
+    if(!f.open(QFile::WriteOnly))
+    {
+        msg("ERROR: Cannot create", filename);
+        return;
+    }
+
     f.write(data);
     generatedFiles.append(filename);
 }
