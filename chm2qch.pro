@@ -13,9 +13,11 @@ include(chmlib/chmlib.pri)
 SOURCES += main.cpp \
     chmfile.cpp \
     hhparser.cpp \
-    helper_entitydecoder.cpp
+    helper_entitydecoder.cpp \
+    converter.cpp
 
 HEADERS += \
     chmfile.h \
     hhparser.h \
-    helper_entitydecoder.h
+    helper_entitydecoder.h \
+    converter.h
