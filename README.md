@@ -8,13 +8,15 @@ Based on [chmlib](http://www.jedrea.com/chmlib/) and some
 
 ### Installation ###
 
-* Qt 5.2 or higher required.
+* Qt 5.2 or higher recommended.
 * chmlib 0.40 (included)
 
 ```
-qmake
+qmake chm2qch.pro
 make
 ```
+
+For Qt <= 5.2 (4.8, etc.) use **chm2qch_qt4.pro**, which includes experimental QCommandLineParser support for Qt 4.
 
 ### Running ###
 
@@ -28,6 +30,7 @@ chm2qch will create helpfile.qhp and extract all HTML files from CHM to current 
 |------------------------|-------------------------------------------------|
 | -?, -h, --help         | Displays help.                                  |
 | -g, --generate         | Run qhelpgenerator to produce QCH file          |
+| -c, --clean            | Delete intermediate files (use with -g)         |
 | -r, --no-root          | Do not write root contents section              |
 | -q, --quiet            | Quiet mode. Do not write any messages to stdout |
 | -n, --namespace <name> | Set documentation namespace to <name>           |

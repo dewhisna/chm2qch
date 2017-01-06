@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
         {{"r", "no-root"  }, "Do not write root contents section"},
         {{"q", "quiet"    }, "Quiet mode. Do not write any messages to stdout" },
         {{"n", "namespace"}, "Set documentation namespace to <name>", "name"},
-        {{"c", "clean"    }, "Delete immediate files after running qhelpgenerator"},
+        {{"c", "clean"    }, "Delete intermediate files after running qhelpgenerator (use with -g)"},
         {{"d", "directory"}, "Set target directory to <dir>", "dir"}
         //{{"t", "temp"     }, "Use Temporary directory as dest dir" }
         //{{"o", "outfile"  }, "Set output file name to <out>", "out"},
