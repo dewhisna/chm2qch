@@ -40,6 +40,7 @@ ChmFile::~ChmFile()
 
 bool ChmFile::open(const QString &filename)
 {
+    close();
     handle = chm_open(filename.toLocal8Bit().data());
 
     if(!handle)

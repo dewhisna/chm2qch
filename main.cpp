@@ -23,10 +23,18 @@
 #include <QCommandLineParser>
 #include <QDir>
 
+#ifdef USE_GUI
+#include "dialog.h"
+#include <QApplication>
+#endif
 
 int main(int argc, char *argv[])
 {
+#ifdef USE_GUI
+    QApplication app(argc, argv);
+#else
     QCoreApplication app(argc, argv);
+#endif
     app.setOrganizationName("Mitrich Software");
     app.setApplicationName("chm2qch");
     app.setApplicationVersion("1.0");
@@ -47,30 +55,43 @@ int main(int argc, char *argv[])
     });
     parser.process(app);
 
-    QString fileName = parser.positionalArguments().value(0);
-    QString destDir = parser.value("d");
-
-    if(fileName.isEmpty())
-    {
-        std::cout << "No input file specified." << std::endl;
-        parser.showHelp();
-        return 0;
-    }
-
-    if(destDir.isEmpty())
-        destDir = QDir::currentPath();
-
     Converter converter;
-    converter.fileName  = fileName;
-    converter.destDir   = destDir;
     converter.quiet     = parser.isSet("q");
     converter.generate  = parser.isSet("g");
     converter.clean     = parser.isSet("c");
     converter.nameSpace = parser.value("n");
     converter.writeRoot = !parser.isSet("r");
 
-    if(!converter.run())
-        return EXIT_FAILURE;
+    QString destDir = parser.value("d");
+
+    if(destDir.isEmpty())
+        destDir = QDir::currentPath();
+
+    converter.destDir = destDir;
+
+    QString fileName = parser.positionalArguments().value(0);
+
+#ifdef USE_GUI
+    Dialog dialog(&converter);
+#endif
+
+    if(fileName.isEmpty())
+    {
+#ifdef USE_GUI
+        dialog.show();
+#else
+        std::cout << "No input file specified." << std::endl;
+        parser.showHelp();
+        return 0;
+#endif
+    }
+    else
+    {
+        converter.fileName  = fileName;
+
+        if(!converter.run())
+            return EXIT_FAILURE;
+    }
 
     return app.exec();
 }

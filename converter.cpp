@@ -26,8 +26,9 @@
 #include <QFileInfo>
 #include <QDir>
 
-Converter::Converter()
+Converter::Converter(QObject *parent): QObject(parent)
 {
+    guiMode   = false;
     quiet     = false;
     generate  = false;
     clean     = false;
@@ -36,22 +37,37 @@ Converter::Converter()
 
 void Converter::msg(const QString &s0, const QString &s1)
 {
-    if(!quiet)
+    if(guiMode)
+        emit statusChanged(s0 + " " + s1);
+    else if(!quiet)
         std::cout << s0.toStdString() << " " << s1.toStdString() << std::endl;
 }
 
+#define finish(r, m) {\
+    msg(m); \
+    emit finished(r, m); \
+    return r; \
+    }
+
 bool Converter::run()
 {
+    canceled = false;
     ChmFile chm;
 
     if(!chm.open(fileName))
-    {
-        std::cout << "ERROR: Cannot open " << fileName.toStdString();
-        return false;
-    }
+        finish(false, QString("ERROR: Cannot open ") + fileName);
 
+    double c = chm.objectList().count();
+    double n = 1;
     foreach(const QString &name, chm.objectList())
+    {
         writeFile(QDir::cleanPath(destDir + "/" + fileSystemName(name)), chm.objectData(name));
+        emit progressChanged(n / c * 100);
+        n++;
+
+        if(canceled)
+            finish(false, "Converting canceled");
+    }
 
     QString qhpname = QFileInfo(fileName).completeBaseName() + ".qhp";
 
@@ -63,11 +79,13 @@ bool Converter::run()
     if(generate)
         runQhg(QDir::cleanPath(destDir + "/" + qhpname));
 
+    if(canceled)
+        finish(false, "Converting canceled");
+
     if(clean)
         cleanFiles();
 
-    msg("chm2qch finished.");
-    return true;
+    finish(true, "Converting finished.");
 }
 
 QString Converter::fileSystemName(const QString &objname)

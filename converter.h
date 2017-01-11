@@ -19,18 +19,21 @@
 #ifndef CONVERTER_H
 #define CONVERTER_H
 
+#include <QObject>
 #include <QString>
 #include <QByteArray>
 #include <QStringList>
 
 class ChmFile;
 
-class Converter
+class Converter: public QObject
 {
-public:
-    Converter();
-    bool run();
+    Q_OBJECT
 
+public:
+    Converter(QObject *parent = Q_NULLPTR);
+
+    bool    guiMode;
     bool    quiet;
     bool    generate;
     bool    clean;
@@ -38,6 +41,15 @@ public:
     QString nameSpace;
     QString destDir;
     QString fileName;
+    bool    canceled;
+
+public slots:
+    bool run();
+
+signals:
+    void statusChanged(const QString &status);
+    void progressChanged(int p);
+    void finished(bool ok, QString msg);
 
 private:
     QString fileSystemName(const QString &objname);
