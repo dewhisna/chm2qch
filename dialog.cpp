@@ -10,6 +10,10 @@
 #include <QMessageBox>
 #include <QFileInfo>
 
+#if QT_VERSION < 0x050200
+#include <QToolButton>
+#endif
+
 Dialog::Dialog(Converter *conv, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog)
@@ -19,10 +23,10 @@ Dialog::Dialog(Converter *conv, QWidget *parent) :
     ui->setupUi(this);
     setupAutoComplete(ui->fileName,  false);
     setupAutoComplete(ui->destDir, true);
-    actSelectFile = new QAction(QIcon(":/images/folder.png"), tr("Select input file"));
-    actSelectDir  = new QAction(QIcon(":/images/folder.png"), tr("Select output directory"));
-    ui->fileName->addAction(actSelectFile, QLineEdit::TrailingPosition);
-    ui->destDir->addAction(actSelectDir, QLineEdit::TrailingPosition);
+    actSelectFile = new QAction(QIcon(":/images/folder.png"), tr("Select input file"), this);
+    actSelectDir  = new QAction(QIcon(":/images/folder.png"), tr("Select output directory"), this);
+    addEditAction(ui->fileName, actSelectFile);
+    addEditAction(ui->destDir,  actSelectDir);
     setProgressMode(false);
 
     ui->destDir->setText(converter->destDir);
@@ -153,4 +157,21 @@ void Dialog::setupAutoComplete(QLineEdit *lineEdit, bool dirsOnly)
     QCompleter *completer = new QCompleter(this);
     completer->setModel(model);
     lineEdit->setCompleter(completer);
+}
+
+void Dialog::addEditAction(QLineEdit *lineEdit, QAction *action)
+{
+#if QT_VERSION >= 0x050200
+    lineEdit->addAction(action, QLineEdit::TrailingPosition);
+#else
+    QToolButton *btn = new QToolButton(this);
+    btn->setDefaultAction(action);
+    btn->setAutoRaise(true);
+    btn->setCursor(Qt::ArrowCursor);
+    QHBoxLayout *l = new QHBoxLayout;
+    l->setContentsMargins(0, 0, 0, 0);
+    l->addStretch();
+    l->addWidget(btn);
+    lineEdit->setLayout(l);
+#endif
 }

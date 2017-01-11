@@ -34,6 +34,7 @@ signals:
 
 private:
     void setupAutoComplete(QLineEdit *lineEdit, bool dirsOnly);
+    void addEditAction(QLineEdit *lineEdit, QAction *action);
 
     Ui::Dialog *ui;
     QAction *actSelectFile;

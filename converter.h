@@ -31,7 +31,7 @@ class Converter: public QObject
     Q_OBJECT
 
 public:
-    Converter(QObject *parent = Q_NULLPTR);
+    Converter(QObject *parent = 0);
 
     bool    guiMode;
     bool    quiet;
