@@ -22,6 +22,7 @@
 
 #include <chm_lib.h>
 #include <QBuffer>
+#include <QRegExp>
 #include <QDebug>
 
 ChmFile::ChmFile()
@@ -117,7 +118,7 @@ void ChmFile::writeToc(QXmlStreamWriter &xml, bool writeRoot)
 
         xml.writeStartElement("section");
         xml.writeAttribute("title", toc[i].name);
-        xml.writeAttribute("ref", toc[i].urls.value(0).toString());
+        xml.writeAttribute("ref", fixUrl(toc[i].urls.value(0).toString()));
 
         if(!hasChild)
             xml.writeEndElement();//section
@@ -145,7 +146,7 @@ void ChmFile::writeIndex(QXmlStreamWriter &xml)
     {
         xml.writeStartElement("keyword");
         xml.writeAttribute("name", toc[i].name);
-        xml.writeAttribute("ref", toc[i].urls.value(0).toString());
+        xml.writeAttribute("ref", fixUrl(toc[i].urls.value(0).toString()));
         xml.writeEndElement();
     }
 }
@@ -193,6 +194,12 @@ void ChmFile::readSystemData()
         case CHMINFO_LOCALE       : lcid = (short)(data[0] | (data[1] << 8)); break;
         }
     }
+}
+
+QString ChmFile::fixUrl(QString url)
+{
+    QRegExp re("ms-its:*.chm::/", Qt::CaseInsensitive, QRegExp::Wildcard);
+    return url.remove(re);
 }
 
 int enumChmContents(chmFile *h, chmUnitInfo *ui, void *context)

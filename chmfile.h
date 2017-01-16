@@ -55,6 +55,7 @@ private:
     QString tocFileName() const;
     QString idxFileName() const;
     void    readSystemData();
+    QString fixUrl(QString url);
 
     chmFile *handle;
     QStringList objNames;
