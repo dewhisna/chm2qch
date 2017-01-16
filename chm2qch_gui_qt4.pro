@@ -16,14 +16,16 @@ SOURCES += main.cpp \
     hhparser.cpp \
     helper_entitydecoder.cpp \
     converter.cpp \
-    dialog.cpp
+    dialog.cpp \
+    ebook_chm_encoding.cpp
 
 HEADERS += \
     chmfile.h \
     hhparser.h \
     helper_entitydecoder.h \
     converter.h \
-    dialog.h
+    dialog.h \
+    ebook_chm_encoding.h
 
 FORMS += \
     dialog.ui

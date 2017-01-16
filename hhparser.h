@@ -44,7 +44,7 @@ public:
     HhParser(ChmFile *f);
     ~HhParser();
 
-    bool parse(const QString& fileName, QList<ParsedEntry>& data, bool asIndex ) const;
+    bool parse(const QString& fileName, QList<ParsedEntry>& data, bool asIndex );
 
 private:
     int findStringInQuotes(const QString& tag, int offset, QString& value, bool firstquote, bool decodeentities) const;

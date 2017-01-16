@@ -18,6 +18,7 @@
 
 #include "chmfile.h"
 #include "hhparser.h"
+#include "ebook_chm_encoding.h"
 
 #include <chm_lib.h>
 #include <QBuffer>
@@ -26,6 +27,7 @@
 ChmFile::ChmFile()
 {
     handle = NULL;
+    lcid = 0;
 }
 
 ChmFile::ChmFile(const QString &filename)
@@ -89,6 +91,11 @@ QString ChmFile::title()
 QString ChmFile::homeUrl()
 {
     return defaultTopic;
+}
+
+QString ChmFile::encoding()
+{
+    return Ebook_CHM_Encoding::guessByLCID(lcid);
 }
 
 void ChmFile::writeToc(QXmlStreamWriter &xml, bool writeRoot)
@@ -179,10 +186,12 @@ void ChmFile::readSystemData()
         buffer.read((char *)&length, 2);
         QByteArray data = buffer.read(length);
 
-        if(code == 3)
-            titleStr = QString(data);
-        else if(code == 2)
-            defaultTopic = QString(data);
+        switch(code)
+        {
+        case CHMINFO_TITLE        : titleStr = QString(data); break;
+        case CHMINFO_DEFAULT_TOPIC: defaultTopic = QString(data); break;
+        case CHMINFO_LOCALE       : lcid = (short)(data[0] | (data[1] << 8)); break;
+        }
     }
 }
 

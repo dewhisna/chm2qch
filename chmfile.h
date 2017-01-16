@@ -24,6 +24,10 @@
 #include <QByteArray>
 #include <QXmlStreamWriter>
 
+#define CHMINFO_DEFAULT_TOPIC 2
+#define CHMINFO_TITLE         3
+#define CHMINFO_LOCALE        4
+
 struct chmFile;
 struct chmUnitInfo;
 
@@ -42,6 +46,7 @@ public:
 
     QString title();
     QString homeUrl();
+    QString encoding();
 
     void writeToc(QXmlStreamWriter &xml, bool writeRoot = true);
     void writeIndex(QXmlStreamWriter &xml);
@@ -55,8 +60,10 @@ private:
     QStringList objNames;
     QString titleStr;
     QString defaultTopic;
+    unsigned short lcid;
 
     friend int enumChmContents(chmFile *h, chmUnitInfo *ui, void *context);
+    //friend class HhParser;
 };
 
 int enumChmContents(chmFile *h, chmUnitInfo *ui, void *context);

@@ -34,13 +34,14 @@ HhParser::~HhParser()
  * Based on EBook_CHM::parseFileAndFillArray from Kchmviewer source.
  * (Copyright (C) 2004-2014 George Yunaev, gyunaev@ulduzsoft.com)
  */
-bool HhParser::parse(const QString& fileName, QList< ParsedEntry >& data, bool asIndex ) const
+bool HhParser::parse(const QString& fileName, QList< ParsedEntry >& data, bool asIndex )
 {
     const int MAX_NEST_DEPTH = 256;
 
     QByteArray rawData = chm->objectData(fileName);
-    QTextCodec *codec = QTextCodec::codecForHtml(rawData);
+    QTextCodec *codec = QTextCodec::codecForName(chm->encoding().toLatin1());
     QString src = codec->toUnicode(rawData);
+    m_htmlEntityDecoder.changeEncoding(codec);
 
     int pos = 0, indent = 0, root_indent_offset = 0;
     bool in_object = false, root_indent_offset_set = false;
