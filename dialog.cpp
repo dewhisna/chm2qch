@@ -39,6 +39,7 @@ Dialog::Dialog(Converter *conv, QWidget *parent) :
     connect(ui->fileName,  SIGNAL(textChanged(QString)), SLOT(enableOkBtn(QString)));
     connect(ui->okBtn,     SIGNAL(clicked()),            SLOT(start()));
     connect(ui->cancelBtn, SIGNAL(clicked()),            SLOT(stop()));
+    connect(ui->helpBtn,   SIGNAL(clicked()),            SLOT(showHelp()));
 
     converterThread = new QThread(this);
     converter->moveToThread(converterThread);
@@ -141,6 +142,11 @@ void Dialog::finished(bool ok, QString msg)
         QMessageBox::information(this, "chm2qch", msg);
     else
         QMessageBox::warning(this, "chm2qch", msg);
+}
+
+void Dialog::showHelp()
+{
+    //
 }
 
 void Dialog::setupAutoComplete(QLineEdit *lineEdit, bool dirsOnly)

@@ -28,6 +28,7 @@ private slots:
     void start();
     void stop();
     void finished(bool ok, QString msg);
+    void showHelp();
 
 signals:
     void runConverter();

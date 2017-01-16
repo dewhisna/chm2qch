@@ -147,6 +147,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="helpBtn">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Help</string>
        </property>
