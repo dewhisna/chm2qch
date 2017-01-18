@@ -55,6 +55,7 @@ Dialog::Dialog(Converter *conv, QWidget *parent) :
     ui->qtDirWidget->setVisible(false);
 
     ui->destDir->setText(converter->destDir);
+    ui->nameSpace->setText(converter->nameSpace);
     ui->qtDir->setCurrentText(converter->qtDir);
     ui->writeRoot->setChecked(converter->writeRoot);
     ui->generate->setChecked(converter->generate);
@@ -152,6 +153,7 @@ void Dialog::start()
 
     converter->fileName  = fileName;
     converter->destDir   = destDir;
+    converter->nameSpace = ui->nameSpace->text();
     converter->writeRoot = ui->writeRoot->isChecked();
     converter->generate  = ui->generate->isChecked();
     converter->clean     = ui->clean->isChecked();
