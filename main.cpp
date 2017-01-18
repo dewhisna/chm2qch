@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
         {{"n", "namespace"}, "Set documentation namespace to <name>", "name"},
         {{"c", "clean"    }, "Delete intermediate files after running qhelpgenerator (use with -g)"},
         {{"d", "directory"}, "Set target directory to <dir>", "dir"},
-        {{"q", "qtdir"    }, "Set Qt binaries location to <dir>", "dir" }
+        {{"b", "qtbindir" }, "Set Qt binaries location to <dir>", "dir" }
         //{{"t", "temp"     }, "Use Temporary directory as dest dir" }
         //{{"o", "outfile"  }, "Set output file name to <out>", "out"},
     });
