@@ -1,6 +1,25 @@
+/*
+ *  chm2qch - Tool for converting Windows CHM files to Qt Help format.
+ *  Copyright (C) 2016 Mitrich Software, bitbucket.org/mitrich_k/chm2qch
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "dialog.h"
 #include "ui_dialog.h"
 #include "converter.h"
+#include "qtdirinfo.h"
 
 #include <QCompleter>
 #include <QFileSystemModel>
@@ -21,19 +40,22 @@ Dialog::Dialog(Converter *conv, QWidget *parent) :
     converter = conv;
 
     ui->setupUi(this);
-    setupAutoComplete(ui->fileName,  false);
+    setupAutoComplete(ui->fileName, false);
     setupAutoComplete(ui->destDir, true);
-    setupAutoComplete(ui->qtDir, true);
+    setupAutoComplete(ui->qtDir->lineEdit(), true);
     actSelectFile = new QAction(QIcon(":/images/folder.png"), tr("Select input file"), this);
     actSelectDir  = new QAction(QIcon(":/images/folder.png"), tr("Select output directory"), this);
     actSelectQtDir= new QAction(QIcon(":/images/folder.png"), tr("Select Qt binaries directory"), this);
     addEditAction(ui->fileName, actSelectFile);
     addEditAction(ui->destDir,  actSelectDir);
-    addEditAction(ui->qtDir,    actSelectQtDir);
-    setProgressMode(false);
+    addEditAction(ui->qtDir->lineEdit(), actSelectQtDir);
+    setupQtDirList();
 
+    setProgressMode(false);
     ui->qtDirWidget->setVisible(false);
+
     ui->destDir->setText(converter->destDir);
+    ui->qtDir->setCurrentText(converter->qtDir);
     ui->writeRoot->setChecked(converter->writeRoot);
     ui->generate->setChecked(converter->generate);
     ui->clean->setChecked(converter->clean);
@@ -92,10 +114,10 @@ void Dialog::selectDir()
 
 void Dialog::selectQtDir()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Qt binaries directory"), ui->qtDir->text());
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Qt binaries directory"), ui->qtDir->currentText());
 
     if(!dir.isEmpty())
-        ui->qtDir->setText(dir);
+        ui->qtDir->setCurrentText(dir);
 }
 
 void Dialog::enableOkBtn(const QString &text)
@@ -133,7 +155,7 @@ void Dialog::start()
     converter->writeRoot = ui->writeRoot->isChecked();
     converter->generate  = ui->generate->isChecked();
     converter->clean     = ui->clean->isChecked();
-    converter->qtDir     = ui->qtDir->text();
+    converter->qtDir     = ui->qtDir->currentText();
     converter->guiMode   = true;
 
     emit runConverter();
@@ -195,4 +217,22 @@ void Dialog::addEditAction(QLineEdit *lineEdit, QAction *action)
     l->addWidget(btn);
     lineEdit->setLayout(l);
 #endif
+}
+
+void Dialog::setupQtDirList()
+{
+    QtVersionReader qv;
+
+    if(!qv.read())
+        return;
+
+    QMapIterator<QString, QString> i(qv.versionInfo);
+
+    while(i.hasNext())
+    {
+        i.next();
+
+        if(i.key().startsWith("QtVersion"))
+            ui->qtDir->addItem(QFileInfo(i.value()).path());
+    }
 }

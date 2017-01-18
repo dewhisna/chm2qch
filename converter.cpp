@@ -194,7 +194,7 @@ bool Converter::runQhg(const QString &qhpname)
     msg("Running qhelpgenerator:");
     QString appName;
 
-    if(qtDir.isEmpty())
+    if(qtDir.isEmpty() || (!QDir(qtDir).exists()))
         appName = "qhelpgenerator";
     else
         appName = QDir::cleanPath(qtDir + "/qhelpgenerator");
