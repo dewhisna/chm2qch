@@ -140,7 +140,7 @@ void ChmFile::writeIndex(QXmlStreamWriter &xml)
 {
     QList<ParsedEntry> toc;
     HhParser p(this);
-    p.parse(tocFileName(), toc, false);
+    p.parse(idxFileName(), toc, false);
 
     for(int i = 0; i < toc.count(); i++)
     {
