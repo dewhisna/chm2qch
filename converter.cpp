@@ -18,6 +18,7 @@
 
 #include "converter.h"
 #include "chmfile.h"
+#include "qtdirinfo.h"
 
 #include <iostream>
 #include <QXmlStreamWriter>
@@ -25,6 +26,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include <QDebug>
 
 Converter::Converter(QObject *parent): QObject(parent)
 {
@@ -175,17 +177,58 @@ void Converter::writeQhp(const QString &filename, ChmFile *chm, const QString &n
     generatedFiles.append(filename);
 }
 
-void Converter::runQhg(const QString &qhpname)
+QProcess::ProcessError Converter::runProcess(const QString &program, const QStringList &args)
 {
-    msg("Running qhelpgenerator:");
-
     QProcess qhg;
 
     if(!quiet)
         qhg.setProcessChannelMode(QProcess::ForwardedChannels);
 
-    qhg.start("qhelpgenerator", {qhpname});
+    qhg.start(program, args);
     qhg.waitForFinished(-1);
+    return qhg.error();
+}
+
+bool Converter::runQhg(const QString &qhpname)
+{
+    msg("Running qhelpgenerator:");
+    QString appName;
+
+    if(qtDir.isEmpty())
+        appName = "qhelpgenerator";
+    else
+        appName = QDir::cleanPath(qtDir + "/qhelpgenerator");
+
+    QProcess::ProcessError e = runProcess(appName, {qhpname});
+
+    if(e == QProcess::FailedToStart)
+    {
+        msg("qhelpgenerator not found, checking QTDIR env variable..");
+        appName = QDir::cleanPath(QtDirInfo::locate(QtDirInfo::LocateQtDir) + "/qhelpgenerator");
+        e = runProcess(appName, {qhpname});
+    }
+    else
+        return true;
+
+    if(e == QProcess::FailedToStart)
+    {
+        msg("qhelpgenerator not found, checking QLibraryInfo::BinariesPath...");
+        appName = QDir::cleanPath(QtDirInfo::locate(QtDirInfo::LocateQLibInfo) + "/qhelpgenerator");
+        e = runProcess(appName, {qhpname});
+    }
+    else
+        return true;
+
+    if(e == QProcess::FailedToStart)
+    {
+        msg("qhelpgenerator not found, checking Qt Creator profile..");
+        appName = QDir::cleanPath(QtDirInfo::locate(QtDirInfo::LocateCreator) + "/qhelpgenerator");
+        e = runProcess(appName, {qhpname});
+    }
+    else
+        return true;
+
+    return e != QProcess::FailedToStart;
 }
 
 void Converter::cleanFiles()

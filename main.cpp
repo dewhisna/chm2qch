@@ -49,7 +49,8 @@ int main(int argc, char *argv[])
         {{"q", "quiet"    }, "Quiet mode. Do not write any messages to stdout" },
         {{"n", "namespace"}, "Set documentation namespace to <name>", "name"},
         {{"c", "clean"    }, "Delete intermediate files after running qhelpgenerator (use with -g)"},
-        {{"d", "directory"}, "Set target directory to <dir>", "dir"}
+        {{"d", "directory"}, "Set target directory to <dir>", "dir"},
+        {{"q", "qtdir"    }, "Set Qt binaries location to <dir>", "dir" }
         //{{"t", "temp"     }, "Use Temporary directory as dest dir" }
         //{{"o", "outfile"  }, "Set output file name to <out>", "out"},
     });
@@ -61,6 +62,7 @@ int main(int argc, char *argv[])
     converter.clean     = parser.isSet("c");
     converter.nameSpace = parser.value("n");
     converter.writeRoot = !parser.isSet("r");
+    converter.qtDir     = parser.value("q");
 
     QString destDir = parser.value("d");
 

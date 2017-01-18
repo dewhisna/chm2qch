@@ -23,12 +23,16 @@ Dialog::Dialog(Converter *conv, QWidget *parent) :
     ui->setupUi(this);
     setupAutoComplete(ui->fileName,  false);
     setupAutoComplete(ui->destDir, true);
+    setupAutoComplete(ui->qtDir, true);
     actSelectFile = new QAction(QIcon(":/images/folder.png"), tr("Select input file"), this);
     actSelectDir  = new QAction(QIcon(":/images/folder.png"), tr("Select output directory"), this);
+    actSelectQtDir= new QAction(QIcon(":/images/folder.png"), tr("Select Qt binaries directory"), this);
     addEditAction(ui->fileName, actSelectFile);
     addEditAction(ui->destDir,  actSelectDir);
+    addEditAction(ui->qtDir,    actSelectQtDir);
     setProgressMode(false);
 
+    ui->qtDirWidget->setVisible(false);
     ui->destDir->setText(converter->destDir);
     ui->writeRoot->setChecked(converter->writeRoot);
     ui->generate->setChecked(converter->generate);
@@ -36,10 +40,12 @@ Dialog::Dialog(Converter *conv, QWidget *parent) :
 
     connect(actSelectFile, SIGNAL(triggered()),          SLOT(selectFile()));
     connect(actSelectDir,  SIGNAL(triggered()),          SLOT(selectDir()));
+    connect(actSelectQtDir,SIGNAL(triggered()),          SLOT(selectQtDir()));
     connect(ui->fileName,  SIGNAL(textChanged(QString)), SLOT(enableOkBtn(QString)));
     connect(ui->okBtn,     SIGNAL(clicked()),            SLOT(start()));
     connect(ui->cancelBtn, SIGNAL(clicked()),            SLOT(stop()));
     connect(ui->helpBtn,   SIGNAL(clicked()),            SLOT(showHelp()));
+    connect(ui->toggleQtDir, SIGNAL(clicked(bool)), ui->qtDirWidget, SLOT(setVisible(bool)));
 
     converterThread = new QThread(this);
     converter->moveToThread(converterThread);
@@ -84,6 +90,14 @@ void Dialog::selectDir()
         ui->destDir->setText(dir);
 }
 
+void Dialog::selectQtDir()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Qt binaries directory"), ui->qtDir->text());
+
+    if(!dir.isEmpty())
+        ui->qtDir->setText(dir);
+}
+
 void Dialog::enableOkBtn(const QString &text)
 {
     ui->okBtn->setEnabled(!text.isEmpty());
@@ -119,6 +133,7 @@ void Dialog::start()
     converter->writeRoot = ui->writeRoot->isChecked();
     converter->generate  = ui->generate->isChecked();
     converter->clean     = ui->clean->isChecked();
+    converter->qtDir     = ui->qtDir->text();
     converter->guiMode   = true;
 
     emit runConverter();

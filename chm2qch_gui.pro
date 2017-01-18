@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     helper_entitydecoder.cpp \
     converter.cpp \
     dialog.cpp \
-    ebook_chm_encoding.cpp
+    ebook_chm_encoding.cpp \
+    qtdirinfo.cpp
 
 HEADERS += \
     chmfile.h \
@@ -23,7 +24,8 @@ HEADERS += \
     helper_entitydecoder.h \
     converter.h \
     dialog.h \
-    ebook_chm_encoding.h
+    ebook_chm_encoding.h \
+    qtdirinfo.h
 
 FORMS += \
     dialog.ui

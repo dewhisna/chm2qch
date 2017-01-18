@@ -23,6 +23,7 @@ public:
 private slots:
     void selectFile();
     void selectDir();
+    void selectQtDir();
     void enableOkBtn(const QString &text);
     void setProgressMode(bool v);
     void start();
@@ -40,6 +41,7 @@ private:
     Ui::Dialog *ui;
     QAction *actSelectFile;
     QAction *actSelectDir;
+    QAction *actSelectQtDir;
     Converter *converter;
     QThread *converterThread;
     bool converterRunning;

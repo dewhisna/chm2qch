@@ -23,6 +23,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QStringList>
+#include <QProcess>
 
 class ChmFile;
 
@@ -41,6 +42,7 @@ public:
     QString nameSpace;
     QString destDir;
     QString fileName;
+    QString qtDir;
     bool    canceled;
 
 public slots:
@@ -56,9 +58,10 @@ private:
     QString namespaceFromTitle(QString title, bool full = true);
     void    writeFile(const QString &filename, const QByteArray &data);
     void    writeQhp(const QString &filename, ChmFile *chm, const QString &nameSpace, bool writeRoot = true);
-    void    runQhg(const QString &qhpname);
+    bool    runQhg(const QString &qhpname);
     void    cleanFiles();
     void    msg(const QString &s0, const QString &s1 = QString());
+    QProcess::ProcessError runProcess(const QString &program, const QStringList &args);
 
     QStringList generatedFiles;
 };

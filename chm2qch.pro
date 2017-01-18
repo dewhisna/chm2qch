@@ -15,11 +15,13 @@ SOURCES += main.cpp \
     hhparser.cpp \
     helper_entitydecoder.cpp \
     converter.cpp \
-    ebook_chm_encoding.cpp
+    ebook_chm_encoding.cpp \
+    qtdirinfo.cpp
 
 HEADERS += \
     chmfile.h \
     hhparser.h \
     helper_entitydecoder.h \
     converter.h \
-    ebook_chm_encoding.h
+    ebook_chm_encoding.h \
+    qtdirinfo.h
