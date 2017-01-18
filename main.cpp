@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 #endif
     app.setOrganizationName("Mitrich Software");
     app.setApplicationName("chm2qch");
-    app.setApplicationVersion("1.1.1");
+    app.setApplicationVersion("1.2.0");
 
     QCommandLineParser parser;
     parser.setApplicationDescription("Converts CHM files to QCH format.");
@@ -95,5 +95,9 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
     }
 
+#ifdef USE_GUI
     return app.exec();
+#else
+    return 0;
+#endif
 }

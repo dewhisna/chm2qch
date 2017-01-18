@@ -144,10 +144,16 @@ void ChmFile::writeIndex(QXmlStreamWriter &xml)
 
     for(int i = 0; i < toc.count(); i++)
     {
-        xml.writeStartElement("keyword");
-        xml.writeAttribute("name", toc[i].name);
-        xml.writeAttribute("ref", fixUrl(toc[i].urls.value(0).toString()));
-        xml.writeEndElement();
+        QString name = toc[i].name;
+        QString ref = fixUrl(toc[i].urls.value(0).toString());
+
+        if((!name.isEmpty()) && (!ref.isEmpty()))
+        {
+            xml.writeStartElement("keyword");
+            xml.writeAttribute("name", name);
+            xml.writeAttribute("ref", ref);
+            xml.writeEndElement();
+        }
     }
 }
 
