@@ -23,6 +23,7 @@
 #include <chm_lib.h>
 #include <QBuffer>
 #include <QRegExp>
+#include <QTextCodec>
 #include <QDebug>
 
 ChmFile::ChmFile()
@@ -184,6 +185,7 @@ void ChmFile::readSystemData()
     unsigned int version;
     unsigned short code;
     unsigned short length;
+    QByteArray titleData;
 
     buffer.read((char *)&version, 4);
 
@@ -195,11 +197,15 @@ void ChmFile::readSystemData()
 
         switch(code)
         {
-        case CHMINFO_TITLE        : titleStr = QString(data); break;
+        case CHMINFO_TITLE        : titleData = data; break;
         case CHMINFO_DEFAULT_TOPIC: defaultTopic = QString(data); break;
         case CHMINFO_LOCALE       : lcid = (short)(data[0] | (data[1] << 8)); break;
         }
     }
+
+    QTextCodec *codec = QTextCodec::codecForName(encoding().toLatin1());
+    titleStr = codec->toUnicode(titleData);
+    titleStr.remove(QChar('\0'));
 }
 
 QString ChmFile::fixUrl(QString url)
