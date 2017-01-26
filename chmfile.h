@@ -64,7 +64,6 @@ private:
     unsigned short lcid;
 
     friend int enumChmContents(chmFile *h, chmUnitInfo *ui, void *context);
-    //friend class HhParser;
 };
 
 int enumChmContents(chmFile *h, chmUnitInfo *ui, void *context);

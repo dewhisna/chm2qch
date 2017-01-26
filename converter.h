@@ -42,6 +42,7 @@ public:
     QString nameSpace;
     QString destDir;
     QString fileName;
+    QString outName;
     QString qtDir;
     bool    canceled;
 

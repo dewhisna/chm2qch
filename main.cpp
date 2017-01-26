@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 #endif
     app.setOrganizationName("Mitrich Software");
     app.setApplicationName("chm2qch");
-    app.setApplicationVersion("1.2.0");
+    app.setApplicationVersion("1.2.2");
 
     QCommandLineParser parser;
     parser.setApplicationDescription("Converts CHM files to QCH format.");
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     converter.clean     = parser.isSet("c");
     converter.nameSpace = parser.value("n");
     converter.writeRoot = !parser.isSet("r");
-    converter.qtDir     = parser.value("q");
+    converter.qtDir     = parser.value("b");
 
     QString destDir = parser.value("d");
 

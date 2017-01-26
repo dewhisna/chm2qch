@@ -203,7 +203,7 @@ bool Converter::runQhg(const QString &qhpname)
 
     if(e == QProcess::FailedToStart)
     {
-        msg("qhelpgenerator not found, checking QTDIR env variable..");
+        msg("qhelpgenerator not found, checking QTDIR env variable...");
         appName = QDir::cleanPath(QtDirInfo::locate(QtDirInfo::LocateQtDir) + "/qhelpgenerator");
         e = runProcess(appName, {qhpname});
     }
@@ -221,7 +221,7 @@ bool Converter::runQhg(const QString &qhpname)
 
     if(e == QProcess::FailedToStart)
     {
-        msg("qhelpgenerator not found, checking Qt Creator profile..");
+        msg("qhelpgenerator not found, checking Qt Creator profile...");
         appName = QDir::cleanPath(QtDirInfo::locate(QtDirInfo::LocateCreator) + "/qhelpgenerator");
         e = runProcess(appName, {qhpname});
     }
