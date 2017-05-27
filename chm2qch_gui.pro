@@ -32,3 +32,6 @@ FORMS += \
 
 RESOURCES += \
     resources.qrc
+
+#Common controls manifest (GCC doesn't add it automatically)
+win32-g++: RC_FILE = chm2qch.rc
