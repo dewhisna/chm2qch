@@ -22,6 +22,7 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QDir>
+#include <QDebug>
 
 #ifdef USE_GUI
 #include "dialog.h"
@@ -37,7 +38,7 @@ int main(int argc, char *argv[])
 #endif
     app.setOrganizationName("Mitrich Software");
     app.setApplicationName("chm2qch");
-    app.setApplicationVersion("1.2.2");
+    app.setApplicationVersion("1.2.3");
 
     QCommandLineParser parser;
     parser.setApplicationDescription("Converts CHM files to QCH format.");
@@ -74,6 +75,9 @@ int main(int argc, char *argv[])
     QString fileName = parser.positionalArguments().value(0);
 
 #ifdef USE_GUI
+    if(parser.optionNames().count() + parser.positionalArguments().count() == 0)
+        converter.loadSettings();
+
     Dialog dialog(&converter);
 #endif
 

@@ -46,6 +46,9 @@ public:
     QString qtDir;
     bool    canceled;
 
+    void saveSettings();
+    void loadSettings();
+
 public slots:
     bool run();
 

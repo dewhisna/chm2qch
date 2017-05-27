@@ -38,6 +38,12 @@ public:
     explicit Dialog(Converter *conv, QWidget *parent = 0);
     ~Dialog();
 
+public slots:
+    void reject();
+
+protected:
+    void showEvent(QShowEvent *e);
+
 private slots:
     void selectFile();
     void selectDir();

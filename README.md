@@ -35,3 +35,9 @@ chm2qch will create helpfile.qhp and extract all HTML files from CHM to current 
 | -q, --quiet            | Quiet mode. Do not write any messages to stdout |
 | -d, --directory <dir>  | Set target directory to <dir>                   |
 | -n, --namespace <name> | Set documentation namespace to <name>           |
+| -b, --qtbindir <dir>   | Set Qt binaries directory to <dir>              |
+
+Example:
+```
+chm2qch -g -n=com.microsoft.sapi.51 sapi.chm
+```

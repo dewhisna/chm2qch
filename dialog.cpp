@@ -28,6 +28,9 @@
 #include <QThread>
 #include <QMessageBox>
 #include <QFileInfo>
+#include <QLineEdit>
+#include <QSettings>
+#include <QDebug>
 
 #if QT_VERSION < 0x050200
 #include <QToolButton>
@@ -56,7 +59,7 @@ Dialog::Dialog(Converter *conv, QWidget *parent) :
 
     ui->destDir->setText(converter->destDir);
     ui->nameSpace->setText(converter->nameSpace);
-    ui->qtDir->setCurrentText(converter->qtDir);
+    ui->qtDir->setEditText(converter->qtDir);
     ui->writeRoot->setChecked(converter->writeRoot);
     ui->generate->setChecked(converter->generate);
     ui->clean->setChecked(converter->clean);
@@ -89,6 +92,21 @@ Dialog::~Dialog()
     converterThread->wait();
 }
 
+void Dialog::reject()
+{
+    converter->saveSettings();
+    QSettings s;
+    s.setValue("window", saveGeometry());
+    QDialog::reject();
+}
+
+void Dialog::showEvent(QShowEvent *e)
+{
+    QSettings s;
+    restoreGeometry(s.value("window").toByteArray());
+    QDialog::showEvent(e);
+}
+
 void Dialog::selectFile()
 {
     QFileDialog dlg(this);
@@ -118,7 +136,7 @@ void Dialog::selectQtDir()
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select Qt binaries directory"), ui->qtDir->currentText());
 
     if(!dir.isEmpty())
-        ui->qtDir->setCurrentText(dir);
+        ui->qtDir->setEditText(dir);
 }
 
 void Dialog::enableOkBtn(const QString &text)
