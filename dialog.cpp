@@ -46,9 +46,9 @@ Dialog::Dialog(Converter *conv, QWidget *parent) :
     setupAutoComplete(ui->fileName, false);
     setupAutoComplete(ui->destDir, true);
     setupAutoComplete(ui->qtDir->lineEdit(), true);
-    actSelectFile = new QAction(QIcon(":/images/folder.png"), tr("Select input file"), this);
-    actSelectDir  = new QAction(QIcon(":/images/folder.png"), tr("Select output directory"), this);
-    actSelectQtDir= new QAction(QIcon(":/images/folder.png"), tr("Select Qt binaries directory"), this);
+    actSelectFile = new QAction(QIcon(":/res/folder.png"), tr("Select input file"), this);
+    actSelectDir  = new QAction(QIcon(":/res/folder.png"), tr("Select output directory"), this);
+    actSelectQtDir= new QAction(QIcon(":/res/folder.png"), tr("Select Qt binaries directory"), this);
     addEditAction(ui->fileName, actSelectFile);
     addEditAction(ui->destDir,  actSelectDir);
     addEditAction(ui->qtDir->lineEdit(), actSelectQtDir);
@@ -212,7 +212,10 @@ void Dialog::finished(bool ok, QString msg)
 
 void Dialog::showHelp()
 {
-    //
+    QFile f(":/res/help.html");
+    f.open(QFile::ReadOnly);
+    QString help = QString::fromUtf8(f.readAll());
+    QMessageBox::information(this, "Help", help);
 }
 
 void Dialog::setupAutoComplete(QLineEdit *lineEdit, bool dirsOnly)

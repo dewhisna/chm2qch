@@ -1,0 +1,32 @@
+<html>
+<head><title>CHM2QCH</title></head>
+<body>
+<h3>CHM2QCH - Converts Windows CHM files to Qt Help format.</h3>
+<p>This program extracts all contents from CHM file to target directory, 
+creates Qt Help Project file and runs <tt>qhelpgenerator</tt></p>
+
+<p>
+<b>Command line usage:</b> <tt>chm2qch [options] input</tt><br/>
+</p>
+
+<b>Options:</b>
+<table>
+  <tr><td>-?, -h, --help              </td><td>Displays help.</td></tr>
+  <tr><td>-g, --generate              </td><td>Run qhelpgenerator to produce QCH file</td></tr>
+  <tr><td>-r, --no-root               </td><td>Do not write root contents section</td></tr>
+  <tr><td>-q, --quiet                 </td><td>Quiet mode. Do not write any messages to stdout</td></tr>
+  <tr><td>-n, --namespace &lt;name&gt;</td><td>Set documentation namespace to &lt;name&gt;</td></tr>
+  <tr><td>-c, --clean                 </td><td>Delete intermediate files after running qhelpgenerator (use with -g)</td></tr>
+  <tr><td>-d, --directory &lt;dir&gt; </td><td>Set target directory to &lt;dir&gt;</td></tr>
+  <tr><td>-b, --qtbindir &lt;dir&gt;  </td><td>Set Qt binaries location to &lt;dir&gt;</td></tr>
+</table>
+  
+<b>Arguments:</b>
+<table>
+  <tr><td>input&nbsp;&nbsp;</td><td>Input CHM file</td></tr>
+</table>
+<p>
+&copy;2017 Mitrich Software, <a href="https://bitbucket.org/mitrich_k/chm2qch">bitbucket.org/mitrich_k/chm2qch</a>
+</p>
+</body>
+</html>

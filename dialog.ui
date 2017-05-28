@@ -213,7 +213,7 @@
      <item>
       <widget class="QPushButton" name="helpBtn">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>Help</string>
