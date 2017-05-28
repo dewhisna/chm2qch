@@ -76,7 +76,7 @@ Dialog::Dialog(Converter *conv, QWidget *parent) :
     converterThread = new QThread(this);
     converter->moveToThread(converterThread);
 
-    connect(converter, SIGNAL(statusChanged(QString)), ui->status,      SLOT(setText(QString)));
+    connect(converter, SIGNAL(statusChanged(QString)), this,            SLOT(updateStatus(QString)));
     connect(converter, SIGNAL(progressChanged(int)),   ui->progressBar, SLOT(setValue(int)));
     connect(converter, SIGNAL(finished(bool,QString)), this,            SLOT(finished(bool,QString)));
     connect(this,      SIGNAL(runConverter()),         converter,       SLOT(run()));
@@ -157,6 +157,15 @@ void Dialog::setProgressMode(bool v)
     ui->line->setVisible(v);
     ui->status->setVisible(v);
     ui->progressBar->setVisible(v);
+    ui->progressBar->setRange(0, 100);
+}
+
+void Dialog::updateStatus(const QString &s)
+{
+    ui->status->setText(s);
+
+    if(s.startsWith("Running qhelpgenerator"))
+        ui->progressBar->setRange(0, 0);
 }
 
 void Dialog::start()

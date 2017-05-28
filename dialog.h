@@ -50,6 +50,7 @@ private slots:
     void selectQtDir();
     void enableOkBtn(const QString &text);
     void setProgressMode(bool v);
+    void updateStatus(const QString &s);
     void start();
     void stop();
     void finished(bool ok, QString msg);
