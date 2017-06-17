@@ -6,7 +6,11 @@ Based on [chmlib](http://www.jedrea.com/chmlib/) and some
 
 [GPL](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
+![GUI screenshot](screenshot.png)
+
 ### Installation ###
+
+Download [binary release](https://bitbucket.org/mitrich_k/chm2qch/downloads/) or build chm2qch yourself:
 
 * Qt 5.2 or higher recommended.
 * chmlib 0.40 (included)
