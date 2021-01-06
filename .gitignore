@@ -1,4 +1,3 @@
-syntax: glob
 test
 bindist
 Makefile
@@ -28,7 +27,7 @@ Makefile
 *.chm
 *.qch
 
-.git/*
+/.hg
 *~
 /.project
 *.pro.user*
