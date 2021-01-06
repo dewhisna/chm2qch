@@ -513,7 +513,7 @@ int LZXdecompress(struct LZXstate *pState, unsigned char *inpos, unsigned char *
                     for (i = 0; i < 8; i++) { READ_BITS(j, 3); LENTABLE(ALIGNED)[i] = j; }
                     BUILD_TABLE(ALIGNED);
                     /* rest of aligned header is same as verbatim */
-
+                    // fall through
                 case LZX_BLOCKTYPE_VERBATIM:
                     READ_LENGTHS(MAINTREE, 0, 256);
                     READ_LENGTHS(MAINTREE, 256, pState->main_elements);
