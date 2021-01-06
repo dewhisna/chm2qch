@@ -117,7 +117,7 @@ bool HhParser::parse(const QString& fileName, QList< ParsedEntry >& data, bool a
                 data.push_back( entry );
             }
 
-            entry.name = QString::null;
+            entry.name = QString();
             entry.urls.clear();
             entry.seealso.clear();
             in_object = false;
@@ -218,7 +218,7 @@ int HhParser::findStringInQuotes(const QString& tag, int offset, QString& value,
     // If we do not need to decode HTML entities, just return.
     if ( decodeentities )
     {
-        QString htmlentity = QString::null;
+        QString htmlentity = QString();
         bool fill_entity = false;
 
         value.reserve (qend - qbegin); // to avoid multiple memory allocations
@@ -243,7 +243,7 @@ int HhParser::findStringInQuotes(const QString& tag, int offset, QString& value,
                         break;
 
                     value.append ( decode );
-                    htmlentity = QString::null;
+                    htmlentity = QString();
                     fill_entity = false;
                 }
                 else
