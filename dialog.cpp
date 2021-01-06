@@ -31,6 +31,7 @@
 #include <QLineEdit>
 #include <QSettings>
 #include <QDebug>
+#include <QAction>
 
 #if QT_VERSION < 0x050200
 #include <QToolButton>
